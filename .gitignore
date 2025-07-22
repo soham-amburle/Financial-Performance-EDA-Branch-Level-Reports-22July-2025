@@ -1,0 +1,59 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+.ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# OS system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python packaging
+*.egg-info/
+*.egg
+build/
+dist/
+
+# Logs and temp
+*.log
+*.tmp
+*.bak
+
+# Data files (to keep repo clean)
+*.csv
+*.xlsx
+*.xls
+*.json
+*.db
+*.sqlite3
+
+# Environment variables and configs
+.env
+
+# MyPy, PyTest, Coverage
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Spyder-specific
+.spyderproject
+.spyproject
+
+# Others
+__pypackages__/
