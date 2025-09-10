@@ -61,7 +61,7 @@ The following charts were created as part of the analysis:
 - pandas
 - numpy
 - matplotlib  
-*(Note: seaborn was imported but not used in this version of the script)*
+*(Note: seaborn was imported but not used in this version of the script as it was not needed)*
 
 ---
 
