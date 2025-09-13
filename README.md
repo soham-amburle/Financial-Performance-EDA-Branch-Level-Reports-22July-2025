@@ -40,7 +40,7 @@ Here’s a summary of the key steps and insights generated through the analysis:
 - Country-level breakdowns, with a closer look at specific countries like India
 - Filtering by department, such as isolating data for the Sales team
 - Sorting based on metrics like transaction volume, rating, and profit margin
-- Applying boolean filtering using NumPy for conditional analysis
+- Applying Boolean filtering using NumPy for conditional analysis
 - Converting filtered dataframes into NumPy arrays for additional processing
 
 ---
