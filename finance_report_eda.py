@@ -1,166 +1,147 @@
+# ==============================
+# 📊 Finance EDA – Branch Reports
+# ==============================
+
 # Importing required libraries
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
-import seaborn as sns  # (imported but not used yet)
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Reading the dataset
-finance = pd.read_csv('finance_report.csv')
+# Set visual style
+sns.set(style="whitegrid")
 
-# Previewing the first 5 rows
+# ==============================
+# 1. Load & Inspect Dataset
+# ==============================
+finance = pd.read_csv("finance_report.csv")
+
+print("Dataset Shape:", finance.shape)
+print("\nColumn Names:", list(finance.columns))
+print("\nPreview:")
 print(finance.head())
 
-# Printing the entire dataset (optional)
-print(finance)
+# Basic summary statistics
+print("\nSummary Statistics:")
+print(finance.describe())
 
-# Printing all column names
-for col in finance.columns:
-    print(col)
+# Missing values check
+print("\nMissing Values:")
+print(finance.isnull().sum())
 
-# Checking the shape of the dataset
-print(finance.shape)
+# ==============================
+# 2. Helper Functions
+# ==============================
 
-# Counting reports per country
-print(finance['country'].value_counts())
+def plot_bar(data, x, y, title, xlabel, ylabel, color="skyblue", top_n=10):
+    """
+    Generic bar plotter for top N categories.
+    """
+    plt.figure(figsize=(8, 5))
+    sns.barplot(x=x, y=y, data=data.head(top_n), palette=sns.color_palette("Blues", n_colors=top_n))
+    plt.title(title, fontsize=14, weight="bold")
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+    plt.show()
 
-# Bar chart of top 10 countries by report volume
-plt.figure(figsize=(7, 7))
-plt.bar(
-    list(finance['country'].value_counts()[0:10].keys()),
-    list(finance['country'].value_counts()[0:10]),
-    color=['skyblue']
+def top_n(df, column, n=5, ascending=False):
+    """
+    Return top N rows based on a column.
+    """
+    return df.sort_values(by=column, ascending=ascending).head(n)
+
+# ==============================
+# 3. Country-Level Insights
+# ==============================
+
+# Reports per country
+country_counts = finance["country"].value_counts().reset_index()
+country_counts.columns = ["country", "report_count"]
+
+print("\nTop 10 Countries by Report Volume:")
+print(country_counts.head(10))
+
+plot_bar(
+    country_counts,
+    x="country",
+    y="report_count",
+    title="Top 10 Countries by Report Submissions",
+    xlabel="Country",
+    ylabel="Number of Reports"
 )
-plt.show()
 
-# DataFrame of branch names and their revenue
-branch_revenue = finance[['branch_name', 'revenue_eur']]
+# ==============================
+# 4. Branch-Level Revenue Insights
+# ==============================
+
+branch_revenue = finance[["branch_name", "revenue_eur"]].sort_values(by="revenue_eur", ascending=False)
+
+print("\nTop 5 Revenue-Generating Branches:")
 print(branch_revenue.head())
 
-# Sorting branches by revenue
-branch_revenue = branch_revenue.sort_values(by='revenue_eur', ascending=False)
-print(branch_revenue.head())
-
-# Filtering high-revenue branches
-top_revenue = branch_revenue[branch_revenue['revenue_eur'] > 1000000]
-print(top_revenue.head())
-
-# Bar chart of top 5 revenue-generating branches
-plt.figure(figsize=(8, 5))
-plt.bar(
-    list(branch_revenue['branch_name'])[0:5],
-    list(branch_revenue['revenue_eur'])[0:5],
-    color=["blue", "orange", "green", "red", "purple"]
+plot_bar(
+    branch_revenue,
+    x="branch_name",
+    y="revenue_eur",
+    title="Top 5 Branches by Revenue",
+    xlabel="Branch",
+    ylabel="Revenue (EUR)",
+    top_n=5
 )
+
+# ==============================
+# 5. Country Deep-Dive (India Example)
+# ==============================
+
+india = finance[finance["country"] == "India"]
+
+print("\nTop 5 Indian Branches by Revenue:")
+print(top_n(india, "revenue_eur", 5))
+
+print("\nTop 5 Indian Branches by Profit Margin:")
+print(top_n(india, "profit_margin", 5))
+
+print("\nTop 5 Indian Branches by Transaction Volume:")
+print(top_n(india, "transaction_volume", 5))
+
+# ==============================
+# 6. Department-Level Insights
+# ==============================
+
+sales = finance[finance["department"] == "Sales"]
+
+print("\nTop 5 Sales Branches by Revenue:")
+print(top_n(sales, "revenue_eur", 5))
+
+print("\nTop 5 Sales Branches by Rating:")
+print(top_n(sales, "rating", 5))
+
+print("\nTop 5 Sales Branches by Profit Margin:")
+print(top_n(sales, "profit_margin", 5))
+
+# ==============================
+# 7. Correlation Analysis
+# ==============================
+
+plt.figure(figsize=(8, 6))
+corr = finance[["revenue_eur", "expenses_eur", "profit_margin", "transaction_volume", "rating"]].corr()
+sns.heatmap(corr, annot=True, cmap="Blues", fmt=".2f")
+plt.title("Correlation Heatmap of Key Metrics", fontsize=14, weight="bold")
 plt.show()
 
-# Top 3 highest-revenue branches
-print(branch_revenue[0:3])
+# ==============================
+# 8. Distribution Analysis
+# ==============================
 
-# Printing all branch names
-print(finance[['branch_name']])
+plt.figure(figsize=(7, 4))
+sns.histplot(finance["profit_margin"], kde=True, bins=30, color="teal")
+plt.title("Distribution of Profit Margins", fontsize=14, weight="bold")
+plt.xlabel("Profit Margin (%)")
+plt.ylabel("Frequency")
+plt.show()
 
-# Boolean: Is country India?
-print(finance['country'] == 'India')
-
-# 🇮🇳 Reports from India
-India = finance[finance['country'] == 'India']
-print(India.head(10))
-
-# Highest revenue branches in India
-print(India.sort_values(by='revenue_eur', ascending=False).head())
-
-# Print all column names again
-for col in finance.columns:
-    print(col)
-
-# Iterate through a string
-for char in 'India and Germany':
-    print(char)
-
-# Looping through a list
-for dept in ['Sales', 'HR', 'Finance']:
-    print(dept)
-
-# Looping through dictionary keys
-for key in {'a': 1, 'b': 2}:
-    print(key)
-
-# Highest transaction volumes in India
-print(India.sort_values(by='transaction_volume', ascending=False).head())
-
-# 🇮🇳 Top 5 Indian branches by profit margin
-print(
-    India[['branch_name', 'profit_margin']]
-    .sort_values(by='profit_margin', ascending=False)
-    .head()
-)
-
-# Check for a specific branch-country combination
-print(
-    np.sum(
-        (finance['country'] == 'USA') &
-        (finance['branch_name'] == 'New York Central')
-    )
-)
-
-# USA branches excluding a specific one
-print(
-    np.sum(
-        (finance['country'] == 'USA') &
-        (finance['branch_name'] != 'New York Central')
-    )
-)
-
-# Same branch name in other countries
-print(
-    np.sum(
-        (finance['country'] != 'USA') &
-        (finance['branch_name'] == 'New York Central')
-    )
-)
-
-# Number of unique countries
-print(len(finance['country'].unique()))
-
-# Convert top 5 profit-margin branches in India to NumPy array
-print(
-    India[['branch_name', 'profit_margin']]
-    .sort_values(by='profit_margin', ascending=False)
-    .head()
-    .to_numpy()
-)
-
-# Same using .values
-print(
-    India[['branch_name', 'profit_margin']]
-    .sort_values(by='profit_margin', ascending=False)
-    .head()
-    .values
-)
-
-# Sorting India branches by report length
-print(India.sort_values(by='report_length', ascending=False).head())
-
-# DataFrame with ratings
-branch_ratings = finance[['branch_name', 'rating']]
-print(branch_ratings.sort_values(by='rating', ascending=False).head())
-
-# Ratings with department and country
-rating_data = finance[['branch_name', 'rating', 'country', 'department']]
-print(rating_data.sort_values(by='rating', ascending=False).head())
-
-# Data for Sales department
-sales = finance[finance['department'] == 'Sales']
-
-# Top 5 Sales branches by revenue
-print(sales.sort_values(by='revenue_eur', ascending=False).head())
-
-# Top 5 Sales branches by rating
-print(sales.sort_values(by='rating', ascending=False).head())
-
-# Top 5 Sales branches by profit margin
-print(sales.sort_values(by='profit_margin', ascending=False).head())
-
-# 🌍 Most common countries in Sales department
-print(sales['country'].value_counts()[0:2])
-
+# ==============================
+# End of Analysis
+# ==============================
